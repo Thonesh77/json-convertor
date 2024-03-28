@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Excel to JSON</title>
+<header>
+  <img src="https://thumbnailer.mixcloud.com/unsafe/1200x628/profile/2/4/d/f/3bc5-3f62-445a-a72b-30972a3addb7" alt="json png"  width="250px" height="150px">
+</header>
+<link rel="stylesheet" href="C:\Users\91868\Downloads\styles12.css">
+</head>
+<body>
+
+<div class="setup" >
+<input type="file" id="fileInput" accept=".xlsx, .xls" />
+<button onclick="convertToJson()">Convert to JSON</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.3/xlsx.full.min.js"></script>
+<script>
+function convertToJson() {
+  const fileInput = document.getElementById('fileInput');
+  
+  fileInput.addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    
+    reader.onload = function(event) {
+      const data = event.target.result;
+      const workbook = XLSX.read(data, {type: 'binary'});
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      const jsonData = XLSX.utils.sheet_to_json(worksheet, {raw: true});
+      downloadJson(jsonData);
+    };
+    
+    reader.readAsBinaryString(file);
+  });
+}
+
+function downloadJson(jsonData) {
+  const jsonStr = JSON.stringify(jsonData, null, 2);
+  const blob = new Blob([jsonStr], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'output.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+</script>
+</div>
+</body>
+</html>
